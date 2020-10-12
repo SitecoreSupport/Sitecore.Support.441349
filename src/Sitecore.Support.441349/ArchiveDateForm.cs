@@ -175,10 +175,17 @@ namespace Sitecore.Support.Shell.Applications.Dialogs.ArchiveDate
             {
                 Log.Audit(this, "Clear Item Archive date: {0}", new string[] { AuditFormatter.FormatItem(item) });
             }
-            using (EditContext editContext = new EditContext(item))
+
+            #region Modified code
+            foreach (Item version in item.Versions.GetVersions(true))
             {
-                item[FieldIDs.ArchiveDate] = (string.IsNullOrEmpty(value) ? string.Empty : DateUtil.ToIsoDate(universalTime));
+                using (new EditContext(version))
+                {
+                    version[FieldIDs.ArchiveDate] = string.IsNullOrEmpty(value) ? string.Empty : DateUtil.ToIsoDate(universalTime);
+                }
             }
+            #endregion
+
             return true;
         }
 
